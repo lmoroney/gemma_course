@@ -20,10 +20,10 @@ OLLAMA_HOST = os.environ.get("OLLAMA_HOST", "http://localhost:11434")
 OLLAMA_MODEL = os.environ.get("OLLAMA_MODEL", "gemma3:latest") # Assumes you have pulled a gemma3 model
 
 # SMTP Configuration for the email tool
-SMTP_SERVER = "smtp.hostinger.com"
-SMTP_PORT = 465 # SSL
-SMTP_USERNAME = "agent@writerof.ai"
-SMTP_PASSWORD = "TestPassword123!@"
+SMTP_SERVER = os.environ.get("SMTP_SERVER")
+SMTP_PORT = int(os.environ.get("SMTP_PORT", 465)) # Default to 465 for SSL
+SMTP_USERNAME = os.environ.get("SMTP_USERNAME")
+SMTP_PASSWORD = os.environ.get("SMTP_PASSWORD")
 
 
 # --- Part 1: Defining the Agent's Tools ---

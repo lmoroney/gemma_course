@@ -101,26 +101,6 @@ def browse_website(url: str) -> str:
     except requests.exceptions.RequestException as e:
         return f"Error browsing website {url}: {e}"
 
-def get_current_location() -> str:
-    """
-    Gets the user's current location based on their IP address.
-    Returns a "City, Country" string or an error message.
-    """
-    print("--- Tool: Getting current location ---")
-    try:
-        response = requests.get("http://ip-api.com/json/")
-        response.raise_for_status()
-        data = response.json()
-        city = data.get("city")
-        country = data.get("country")
-        if city and country:
-            print(f"--- Successfully found location: {city}, {country} ---")
-            return f"{city}, {country}"
-        else:
-            return "Error: Could not determine location."
-    except requests.exceptions.RequestException as e:
-        return f"Error getting location: {e}"
-
 def send_email(to_address: str, subject: str, body: str) -> str:
     """
     Sends an email using the configured SMTP settings.
@@ -197,34 +177,6 @@ def run_concierge_agent(goal: str, history: list) -> str:
 
 
     print(f"\n🎯 Goal: {goal}\n")
-    
-    # Step 0: Check if a location is needed and get it if necessary
-    prompt_location_check = f"""
-    You are a location-aware assistant. Analyze the user's request to see if it requires a geographical location to be answered effectively.
-    For example, requests for "restaurants," "weather," or "events" need a location. Requests for general facts do not.
-
-    User's request: "{goal}"
-
-    Does this request need a location? Respond with only "yes" or "no".
-    """
-    location_needed = call_gemma_ollama(prompt_location_check, output_format="text").strip().lower()
-
-    if "yes" in location_needed:
-        # Check if a location is already in the goal
-        prompt_has_location = f"""
-        Does the following user request already contain a location (like a city, state, or country)?
-
-        Request: "{goal}"
-
-        Respond with only "yes" or "no".
-        """
-        has_location = call_gemma_ollama(prompt_has_location, output_format="text").strip().lower()
-        if "no" in has_location:
-            print("--- User's request needs a location, and it's missing. Finding current location... ---")
-            current_location = get_current_location()
-            if not current_location.startswith("Error"):
-                goal = f"{goal} in {current_location}"
-                print(f"--- Updated goal with location: {goal} ---")
 
     formatted_history = "\n".join(history)
 
